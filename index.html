@@ -1,1159 +1,600 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão Alta Performance | Casa Goianita</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;600;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Ata de Reunião | Live Consultoria</title>
+    
+    <!-- Pré-conexão para fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Ícones Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+    <!-- CRITICAL CSS (< 50ms FCP) -->
     <style>
         :root {
+            /* --- Atmosfera (Backgrounds) --- */
             --live-deep: #06192a;
-            --live-darker: #04121f;
-            --live-glass: rgba(10, 36, 61, 0.85);
-            --live-glass-hover: rgba(15, 45, 75, 0.95);
+            
+            /* --- Superfícies (Refractive Glass) --- */
+            --live-glass: rgba(10, 36, 61, 0.70);
+            --live-glass-hover: rgba(15, 45, 75, 0.85);
             --glass-blur: blur(16px) saturate(180%);
+
+            /* --- Luz & Ação --- */
             --live-accent: #00e800;
             --live-accent-dim: rgba(0, 232, 0, 0.15);
-            --text-primary: #ffffff;
-            --text-secondary: #94a3b8;
-            --kinetic-gradient: linear-gradient(90deg, #ffffff 0%, #a2ffae 100%);
-            --border-subtle: rgba(255, 255, 255, 0.1);
+            --kinetic-gradient: linear-gradient(90deg, #ffffff 0%, #cccccc 50%, #00e800 100%);
+            
+            /* --- Física de Animação (Micro-Springs) --- */
+            --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-fluid: cubic-bezier(0.4, 0.0, 0.2, 1);
+
+            /* --- Bordas Inteligentes --- */
+            --border-subtle: rgba(255, 255, 255, 0.08);
             --border-active: rgba(0, 232, 0, 0.4);
+
+            /* --- Tipografia base --- */
+            --font-ui: 'Poppins', sans-serif;
+            --font-analytical: 'Merriweather', serif;
         }
 
-        * {
+        body, html {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
+            background-color: var(--live-deep); /* Camada Base (Z -3) */
+            color: #ffffff;
+            font-family: var(--font-ui);
+            overflow-x: hidden;
             scroll-behavior: smooth;
         }
 
-        body {
-            background-color: var(--live-deep);
-            color: var(--text-primary);
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='46' viewBox='0 0 40 46' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%23ffffff' stroke-width='0.5' stroke-opacity='0.08'%3E%3Cpath d='M0 46V23l20-11.5L40 23v23L20 34.5zM0 23L20 11.5 40 23 20 34.5zM20 11.5L0 0 40 0z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            background-attachment: fixed;
+        /* Camadas de Ambiente */
+        .layer-texture {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.4;
+            z-index: -2; /* Camada Textura (Z -2) */
+            pointer-events: none;
         }
 
-        .tab-navigation {
-            background: var(--live-darker);
-            padding: 10px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 2px solid var(--border-subtle);
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            backdrop-filter: blur(15px);
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-secondary);
-            padding: 12px 25px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 14px;
-            transition: 0.4s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-        }
-
-        .tab-btn.active {
-            background: var(--live-accent);
-            color: var(--live-deep);
-            border-color: var(--live-accent);
-            box-shadow: 0 0 20px rgba(0, 232, 0, 0.3);
-        }
-
-        .tab-content {
+        .layer-light-desktop {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; /* Camada Luz Dinâmica (Z -1) */
+            pointer-events: none;
+            background: radial-gradient(circle 600px at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--live-accent-dim), transparent 80%);
             display: none;
-            animation: fadeIn 0.6s ease forwards;
         }
 
-        .tab-content.active {
-            display: block;
+        .layer-light-mobile {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            background: linear-gradient(45deg, transparent 20%, rgba(0, 232, 0, 0.05) 50%, transparent 80%);
+            background-size: 200% 200%;
+            animation: aurora 10s ease infinite;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
+        @media (hover: hover) and (pointer: fine) {
+            .layer-light-desktop { display: block; }
+            .layer-light-mobile { display: none; }
+        }
+    </style>
+
+    <!-- ESTILOS DO SISTEMA V6.0 -->
+    <style>
+        /* Layout Mobile First */
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 4rem;
-            padding-top: 2rem;
-        }
-
-        h1 {
-            font-size: clamp(32px, 6vw, 64px);
-            background: var(--kinetic-gradient);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 15px;
-        }
-
-        .badge {
-            background: var(--live-accent);
-            color: var(--live-deep);
-            padding: 6px 18px;
-            border-radius: 30px;
-            font-weight: 800;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            display: inline-block;
-        }
-
-        .glass-card {
-            background: var(--live-glass);
-            backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--border-subtle);
-            border-radius: 20px;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            transition: 0.4s ease;
-            overflow-x: auto;
-        }
-
-        .glass-card:hover {
-            border-color: var(--live-accent);
-            transform: translateY(-5px);
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            color: #fff;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .tech-card {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-subtle);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 25px;
-        }
-
-        .step-title {
-            font-size: 1.4rem;
-            color: var(--live-accent);
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .why-tag {
-            display: inline-block;
-            background: var(--live-accent-dim);
-            color: var(--live-accent);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            border: 1px solid rgba(0, 232, 0, 0.2);
-        }
-
-        .instruction-block {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        .check-list {
-            list-style: none;
-        }
-
-        .check-list li {
+            padding: 1rem; /* Margens reduzidas (p-4) Mobile */
             position: relative;
-            padding-left: 35px;
-            margin-bottom: 15px;
+            z-index: 1;
         }
 
-        .check-list li::before {
-            content: "\f058";
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            position: absolute;
-            left: 0;
-            color: var(--live-accent);
-            font-size: 18px;
+        @media (min-width: 768px) {
+            .container { padding: 2rem; }
         }
 
-        .timeline-item {
+        /* Header e Branding */
+        .brand-header {
             display: flex;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            padding-bottom: 2rem;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem 0 2rem;
             border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 2rem;
         }
 
-        .time-block {
-            min-width: 140px;
-            text-align: right;
+        .brand-logo {
+            width: 140px;
+            height: auto;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
         }
 
-        .time {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--live-accent);
-        }
-
-        .phase {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            letter-spacing: 1px;
-        }
-
-        .procedure-box {
-            display: none;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px dashed var(--live-accent);
-            margin: 15px 0;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid var(--live-accent);
-            color: var(--live-accent);
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin: 10px 0;
+        .document-meta {
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            background: rgba(255,255,255,0.05);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #a0aec0;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 1rem;
         }
 
-        .weekly-grid {
+        .kinetic-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin: 0;
+            background: var(--kinetic-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            letter-spacing: -0.5px;
+            transition: letter-spacing 0.1s linear;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-top: 1rem;
+            font-weight: 300;
+        }
+
+        /* Cards "Halo" com Física */
+        .grid-dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .day-card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid transparent;
-            transition: 0.3s;
-        }
-
-        .day-card:hover {
-            border-color: var(--live-accent);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .day-header {
-            color: var(--live-accent);
-            font-weight: 800;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: 1fr;
             gap: 1.5rem;
         }
 
-        .team-badge {
-            display: inline-flex;
-            align-items: center;
-            background: var(--live-accent-dim);
-            color: var(--live-accent);
-            padding: 0.25rem 0.75rem;
-            border-radius: 99px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            border: 1px solid rgba(0, 232, 0, 0.2);
+        @media (min-width: 1024px) {
+            .grid-dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        .btn-action {
-            display: inline-flex;
+        .halo-card {
+            background: var(--live-glass);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s var(--ease-fluid);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .halo-card:hover {
+                background: var(--live-glass-hover);
+                transform: translateY(-6px);
+                transition-timing-function: var(--spring-bounce);
+                border-color: var(--border-active);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 
+                            0 0 20px var(--live-accent-dim);
+            }
+            
+            /* Matrix Effect / Refração Interna */
+            .halo-card::before {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
+                z-index: 0;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+            
+            .halo-card:hover::before {
+                opacity: 1;
+            }
+        }
+
+        .card-header {
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 1rem;
+        }
+
+        .card-icon {
+            color: var(--live-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: rgba(0, 232, 0, 0.1);
-            color: var(--live-accent);
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            text-decoration: none;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
             font-weight: 600;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card-content li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+            line-height: 1.6;
             font-size: 0.95rem;
-            border: 1px solid rgba(0, 232, 0, 0.2);
-            transition: all 0.2s;
+            transition: font-family 0.6s var(--ease-fluid);
+        }
+
+        .card-content li::before {
+            content: '•';
+            color: var(--live-accent);
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1.2rem;
+            line-height: 1.2;
+        }
+
+        /* Botões "Ghost Neon" com Inércia */
+        .ghost-neon-btn {
+            background: transparent;
+            color: #ffffff;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-family: var(--font-ui);
+            font-weight: 500;
             cursor: pointer;
-        }
-
-        .btn-action:hover {
-            background: rgba(0, 232, 0, 0.2);
-            transform: translateY(-1px);
-        }
-
-        .logistics-box {
-            background: linear-gradient(90deg, rgba(0, 232, 0, 0.05) 0%, transparent 100%);
-            border-left: 4px solid var(--live-accent);
-            padding: 1rem 1.5rem;
-            border-radius: 0 8px 8px 0;
-            margin: 1.5rem 0;
-        }
-
-        .efficiency-alert {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.75rem;
-            padding: 0.5rem 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 2px solid var(--live-accent);
-            border-radius: 0 4px 4px 0;
+            gap: 8px;
+            transition: all 0.3s var(--ease-fluid);
+            outline: none;
+        }
+
+        .ghost-neon-btn:hover, .ghost-neon-btn:focus-visible {
+            border-color: var(--live-accent);
+            background: var(--live-accent-dim);
+            box-shadow: 0 0 15px rgba(0, 232, 0, 0.2);
+        }
+
+        /* Spring Physics on Click */
+        .ghost-neon-btn:active {
+            transform: scale(0.95);
+            transition: transform 0.1s var(--spring-bounce);
+        }
+
+        /* Acessibilidade - Focus Visible */
+        :focus-visible {
+            outline: 2px solid var(--live-accent);
+            outline-offset: 4px;
+        }
+
+        /* Modo IA (Inteligência Analítica) */
+        body.analytical-mode .card-content li {
+            font-family: var(--font-analytical);
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #f1f5f9;
+        }
+
+        .ai-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--live-glass);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-active);
+            padding: 12px 20px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-size: 0.85rem;
-            color: var(--text-secondary);
+            z-index: 100;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.6s var(--spring-bounce);
         }
 
-        .footer-logo {
-            height: 70px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 15px rgba(0, 232, 0, 0.4));
-            transition: all 0.4s ease;
+        .ai-indicator.active {
+            transform: translateY(0);
+            opacity: 1;
         }
 
-        .footer-logo:hover {
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 35px rgba(0, 232, 0, 0.7));
+        .ai-pulse {
+            width: 8px;
+            height: 8px;
+            background-color: var(--live-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--live-accent);
+            animation: pulse 2s infinite;
         }
 
-        /* Mermaid styling fix for dark mode */
-        .mermaid {
-            background: transparent;
-            padding: 10px;
-            border-radius: 8px;
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 232, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 232, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 232, 0, 0); }
         }
 
-        @media (max-width: 768px) {
-            .tab-navigation {
-                flex-direction: column;
-            }
+        /* Abas Deslizantes (Mobile) - Exemplo caso houvesse navegação */
+        .scroll-tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            scrollbar-width: none; /* Firefox */
+        }
+        .scroll-tabs::-webkit-scrollbar {
+            display: none; /* Safari/Chrome */
+        }
 
-            .timeline-item {
-                flex-direction: column;
-                gap: 10px;
-            }
+        /* Footer */
+        .site-footer {
+            text-align: center;
+            padding: 4rem 1rem 2rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
 
-            .time-block {
-                text-align: left;
-            }
+        .site-footer a {
+            color: var(--live-accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
 
-            .glass-card {
-                padding: 1.5rem;
-            }
-
-            .footer-logo {
-                height: 55px;
-            }
+        .site-footer a:hover {
+            text-shadow: 0 0 8px rgba(0,232,0,0.5);
         }
     </style>
 </head>
-
 <body>
-    <nav class="tab-navigation">
-        <button class="tab-btn active" onclick="switchTab(event, 'tab-organograma')"><i class="fa-solid fa-sitemap"></i>
-            Organograma</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-maestro')"><i class="fa-solid fa-user-tie"></i> Manual do
-            Maestro</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-estoque')"><i class="fa-solid fa-boxes-stacked"></i>
-            Cronograma de Estoque</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-estoque5s')"><i class="fa-solid fa-shield-halved"></i> 5S
-            Elite</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-atas')"><i class="fa-solid fa-file-contract"></i>
-            Atas & Relatórios</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-comunicado')"><i class="fa-solid fa-bullhorn"></i>
-            Comunicado Mudança</button>
-    </nav>
+
+    <!-- Ambiente Digital (Refração e Atmosfera) -->
+    <div class="layer-texture"></div>
+    <div class="layer-light-desktop" id="global-flashlight"></div>
+    <div class="layer-light-mobile"></div>
 
     <div class="container">
+        
+        <!-- Header -->
+        <header class="brand-header">
+            <img src="https://raw.githubusercontent.com/Clebito2/ConsultoriaLive/main/Logo%20live%20oficial-21.png" alt="Live Consultoria Logo" class="brand-logo" loading="eager">
+            
+            <div class="document-meta">
+                <i data-lucide="file-text" size="16"></i>
+                Documento de Registro Executivo
+            </div>
+            
+            <h1 class="kinetic-title" id="main-title">Ata de Reunião</h1>
+            <p class="subtitle">Planejamento Estratégico, Lançamento de Marca e Operações</p>
+            
+            <!-- Controle manual do Modo IA para demonstração -->
+            <div style="margin-top: 1.5rem;">
+                <button class="ghost-neon-btn" id="btn-toggle-ai">
+                    <i data-lucide="brain-circuit" size="18"></i>
+                    Modo Leitura Profunda
+                </button>
+            </div>
+        </header>
 
-        <!-- ================= ABA 0: ORGANOGRAMA ================= -->
-        <div id="tab-organograma" class="tab-content active">
-            <header>
-                <span class="badge">Unidades & Reporte</span>
-                <h1>Estrutura Corporativa</h1>
-                <p class="module-intro" style="border:none; text-align:center;">
-                    Visualização das Cadeias de Comando atualizadas com as novas frentes (T4, 85, 135).
-                </p>
-            </header>
-            <section class="glass-card">
-                <div
-                    style="background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center;">
-                    <div class="mermaid">
-                        graph TD
-                        %% Nível 1 - Conselheiros e Sócios Decisores
-                        subgraph Diretoria_e_Conselho [Nível 1 - Diretoria e Sócios]
-                        SC[Seu Carlos <br /> Fundador / Patriarca]
-                        CL[Cláudia <br /> Sócia / Diretora Comercial e Financeira]
-                        SI[Silvana <br /> Sócia / Cofre e VM]
-                        CU[Curuca/Carlos <br /> Sócio / Compras]
-                        DE[Débora <br /> Sócia / Marketing]
-                        end
-
-                        %% Nível 2 - Gerência Estratégica e Coordenação
-                        subgraph Gerencia_Staff [Nível 2 - Gerência & Staff Central]
-                        LE[Leila <br /> DP e Controladoria RH]
-                        KA[Karinne <br /> Supervisora Central Trocas e Listas]
-                        end
-
-                        %% Nível 3 - Unidades de Negócio (Lojas)
-                        subgraph Unidade_T4 [Loja T4]
-                        EL[Elber <br /> Sócio Gerente T4]
-                        VT4[Vendedores T4: <br /> Pedro, Iza, Joyce, Elayne]
-                        JT4[Juliana <br /> Caixa T4]
-                        end
-
-                        subgraph Unidade_85 [Loja 85]
-                        AD[Adriano <br /> Gerente 85]
-                        V85[Vendedores 85: <br /> Flávia, Valmi, Maria, <br /> Maycon, Iasmin, Batista]
-                        K85[Késia <br /> Caixa 85]
-                        end
-
-                        subgraph Unidade_135 [Loja 135]
-                        FA[Fabrício <br /> Gerente 135]
-                        S135[Sirlene <br /> Vendedora 135]
-                        A135[Ana Paula <br /> Caixa 135]
-                        end
-
-                        %% Nível 4 - BackOffice Operacional
-                        subgraph BackOffice [Nível 4 - BackOffice e Suporte Central]
-                        ER[Érica <br /> Auxiliar Financeiro]
-                        LU[Lucas <br /> Estoquista]
-                        ED[Eduardo <br /> Suporte TI]
-                        end
-
-                        %% Relações de Reporte
-                        SC --> CL
-                        SC --> SI
-                        SC --> CU
-
-                        CL --> LE
-                        CL --> ER
-                        CL --> KA
-
-                        CL --> EL
-                        EL --> VT4
-                        EL --> JT4
-
-                        EL --> AD
-                        AD --> V85
-                        AD --> K85
-
-                        EL --> FA
-                        FA --> S135
-                        S135 --> A135
-
-                        CU --> LU
-
-                        %% Estilização
-                        classDef normal fill:#06192a,stroke:#00e800,stroke-width:2px,color:#fff;
-                        class SC,CL,SI,CU,DE,LE,EL,KA,FA,AD,S135,VT4,V85,JT4,K85,A135,ER,LU,ED normal;
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- ================= ABA 1: MANUAL DO MAESTRO ================= -->
-        <div id="tab-maestro" class="tab-content">
-            <header>
-                <span class="badge">Live Consultoria V6.0</span>
-                <h1>O MAESTRO DA LOJA</h1>
-                <p class="module-intro" style="border:none; text-align:center;">
-                    "Pense nestas novas atribuições como a fundação de uma casa: o cliente não vê a fundação, mas sem
-                    ela, as paredes — as vendas e o atendimento — desmoronam."
-                </p>
-            </header>
-
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-clock"></i> Módulo 1: O Compasso Diário</h2>
-                <div class="tech-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <a href="public/index.html" class="btn-action" target="_blank">
-                            <i class="fa-solid fa-book-open"></i> Acessar Master Book v2 Interativo
-                        </a>
-                    </div>
-                    <div class="step-title"><span>1. Abertura e Inspeção 5S</span> <small>08:00 - 08:30</small></div>
-                    <div class="why-tag">FUNDAÇÃO: Padrão de Excelência</div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Visão Externa:</strong> Observe a vitrina de fora para dentro antes de entrar.
-                                Se você não vê o que o cliente vê, você é apenas um funcionário, não o gestor.</li>
-                            <li><strong>Sensos de Ordenação:</strong> Balcão limpo, sem casacos ou objetos pessoais. O
-                                balcão é uma ferramenta de venda.</li>
-                            <li><strong>Check de TI e Infra:</strong> Teste terminais e sistemas. Garanta que a equipa
-                                não perca vendas por falhas evitáveis.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="tech-card">
-                    <div class="step-title"><span>2. Briefing Matinal</span> <small>08:30 - 08:45</small></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Produtos Foco:</strong> Repasse os itens definidos pela gestão. Explique o
-                                motivo estratégico de vendê-los hoje.</li>
-                            <li><strong>Metas do Dia:</strong> Distribua o objetivo global por cada vendedor de forma
-                                clara e motivadora.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-calendar-check"></i> Módulo 2: O Ajuste das Velas (Semanal)</h2>
-                <div class="tech-card">
-                    <div class="step-title"><span>Visual Merchandising & Vitrina</span></div>
-                    <div class="why-tag">FUNDAÇÃO: Renovação do Desejo</div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Estratégia de Panelas:</strong> A prateleira de panelas deve estar impecável,
-                                com as peças mais pesadas na altura dos olhos.</li>
-                            <li><strong>Troca Semanal:</strong> Altere os cenários toda a segunda-feira. Uma montra
-                                parada vira "paisagem".</li>
-                            <li><strong>Cross-Merchandising:</strong> Se expuser panelas, coloque tábuas e utensílios ao
-                                lado para aumentar o ticket médio.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-chart-line"></i> Módulo 3: A Colheita e o Plantio (Mensal)</h2>
-                <div class="tech-card">
-                    <div class="step-title"><span>1. Inventário e Estoque</span></div>
-                    <div class="why-tag">FUNDAÇÃO: Acuracidade Financeira</div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Contagem Rotativa:</strong> Coordene a contagem por categorias para evitar
-                                "furos" de estoque.</li>
-                            <li><strong>Regra do Giro:</strong> Siga o PEPS (Primeiro que Entra, Primeiro que Sai).</li>
-                            <li><strong>Prevenção de Perdas:</strong> Oriente a equipe quanto a furtos e integridade das
-                                peças.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-user-tie"></i> Módulo 4: O Comportamento do Líder</h2>
-                <div class="tech-card">
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>A Regra da Disciplina:</strong> As normas da loja não são negociáveis.
-                                Advertência não é punição, é educação.</li>
-                            <li><strong>Seja o Exemplo:</strong> A equipa é o reflexo da rotina, pontualidade e postura
-                                do seu gestor.</li>
-                            <li><strong>Inteligência Emocional:</strong> Você está no palco; mantenha a calma em crises.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-users-gear"></i> Módulo 5: Administração de Pessoal e RH (O Guardião da
-                    Cultura)</h2>
-                <div class="why-tag">O PRIMEIRO FILTRO DA EMPRESA</div>
-                <div class="tech-card">
-                    <div class="step-title"><span>1. Recrutamento, Seleção e Integração</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>O Filtro da Contratação:</strong> Você é o guardião da porta. É sua função
-                                entrevistar candidatos e, obrigatoriamente, pesquisar e verificar suas referências
-                                profissionais.</li>
-                            <li><strong>Acolhimento (Onboarding):</strong> Acompanhar o novato passo a passo,
-                                auxiliando-o nas áreas em que precisa melhorar e garantindo que ele siga o cronograma de
-                                treinamento.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="tech-card">
-                    <div class="step-title"><span>2. Gestão de Rotinas Trabalhistas</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Controle de Horários:</strong> Controlar rigorosamente o ponto e o horário de
-                                trabalho da equipe.</li>
-                            <li><strong>Escalas e Folgas:</strong> Conceder mudanças de horários e estabelecer escalas
-                                de folgas e férias.</li>
-                            <li><strong>Documentação e Disciplina:</strong> Exigir documentação correta e documentar
-                                todas as ações corretivas. Advertência não é punição, é educação.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-binoculars"></i> Módulo 6: Inteligência de Mercado e Concorrência (O
-                    Estrategista)</h2>
-                <div class="why-tag">JOGA XADREZ ENQUANTO OS OUTROS JOGAM DAMAS</div>
-                <div class="tech-card">
-                    <div class="step-title"><span>1. Monitoramento da Concorrência</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Mapeamento:</strong> Saiba exatamente quem são seus concorrentes e conheça os
-                                pontos fortes e fracos deles.</li>
-                            <li><strong>Comparação Constante:</strong> Pesquise e compare preços mensalmente,
-                                sortimento, propagandas e qualidade de serviço.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="tech-card">
-                    <div class="step-title"><span>2. Gestão de Promoções</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Planejamento de Ações:</strong> Verifique estoque antes de lançar promoção,
-                                sugira itens à diretoria e prepare vitrine com antecedência.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-truck-loading"></i> Módulo 7: Operações Logísticas e Estoque (O Maestro da
-                    Retaguarda)</h2>
-                <div class="why-tag">ONDE O DINHEIRO DA EMPRESA DORME</div>
-                <div class="tech-card">
-                    <div class="step-title"><span>1. Recebimento Impecável de Mercadorias</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Conferência Física e Documental:</strong> Verifique quantidade e estado
-                                comparando com a NFe.</li>
-                            <li><strong>Tratativa de Divergências:</strong> Faça aditivo na nota e comunique
-                                imediatamente à matriz.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="tech-card">
-                    <div class="step-title"><span>2. Saúde e Giro do Estoque</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Venda Inteligente:</strong> Incentive a venda das mercadorias mais antigas.</li>
-                            <li><strong>Auditorias Surpresas & Prevenção de Perdas:</strong> Contagens rápidas e
-                                vigilância constante.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-calculator"></i> Módulo 8: Gestão Financeira e Burocrática (O Administrador)
-                </h2>
-                <div class="why-tag">GARANTA QUE AS CONTAS FECHEM SEMPRE</div>
-                <div class="tech-card">
-                    <div class="step-title"><span>1. Controle de Caixa e Tesouraria</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Fechamento:</strong> Fiscalize o caixa todos os dias.</li>
-                            <li><strong>Reporte de Divergências:</strong> Informe imediatamente ao supervisor.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="tech-card">
-                    <div class="step-title"><span>2. Controle de Despesas</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li>Controle gastos desnecessários e exija recibos formais de todas as despesas.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-handshake"></i> Módulo 9: Relacionamento de Alto Nível e Gestão de Conflitos
-                    (O Diplomata)</h2>
-                <div class="why-tag">A TROCA É OPORTUNIDADE DE OURO</div>
-                <div class="tech-card">
-                    <div class="step-title"><span>1. Tratativa de Reclamações</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li><strong>Assuma a Frente:</strong> Cuide pessoalmente de toda reclamação. O cliente
-                                precisa sentir que o comandante está no comando.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="tech-card">
-                    <div class="step-title"><span>2. Gestão de Trocas</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li>Domine a política de trocas e ensine: troca não é problema, é porta de entrada para nova
-                                venda e fidelização.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <div class="instruction-block"
-                    style="font-size:1.15rem; font-style:italic; text-align:center; color:#a2ffae;">
-                    Ao integrar estas responsabilidades — desde a conferência minuciosa de uma nota fiscal até a
-                    mediação diplomática de uma reclamação —, você deixará de ser apenas um "chefe de vendas" e passará
-                    a ser um <strong>verdadeiro Gestor de Negócios</strong>, dominando a operação de ponta a ponta.
-                </div>
-            </section>
-        </div>
-
-        <!-- ================= ABA 2: CRONOGRAMA DE ESTOQUE ================= -->
-        <div id="tab-estoque" class="tab-content">
-            <header>
-                <span class="badge">Unidades T4 & 85</span>
-                <h1>GESTÃO DE ESTOQUE 5S</h1>
-                <p class="subtitle">Manual de Operações & Rotinas Logísticas 2026</p>
-            </header>
-            <section class="glass-card">
-                <h2><i data-lucide="truck"></i> Protocolo de Logística e Motorista</h2>
-                <div
-                    style="background: rgba(0,232,0,0.1); border-left: 4px solid var(--live-accent); padding: 15px; border-radius: 0 8px 8px 0; margin-bottom: 20px;">
-                    <strong>Regra de Ouro:</strong> A coleta do motorista é flexível, mas a preparação é FIXA (Manhã). O
-                    motorista não espera separação.
-                </div>
-                <ul class="check-list">
-                    <li><strong>08:00 - 09:30:</strong> Horário obrigatório para separar transferências e entradas no
-                        sistema.</li>
-                    <li><strong>Prioridade:</strong> Itens vendidos para retirada em outra loja têm prioridade absoluta.
-                    </li>
-                </ul>
-            </section>
-            <section class="glass-card">
-                <h2><i data-lucide="clock"></i> Rotina Diária Padrão</h2>
-                <div class="timeline-item">
-                    <div class="time-block">
-                        <div class="time">08:00 - 09:30</div>
-                        <div class="phase">Bloco Crítico</div>
-                    </div>
-                    <div class="content">
-                        <h3>Transferências & Expedição</h3>
-                        <p>Verificar Dashboard, bipar itens via Coletor e organizar zona de saída.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="time-block">
-                        <div class="time">09:00 - 11:00</div>
-                        <div class="phase">Recebimento</div>
-                    </div>
-                    <div class="content">
-                        <h3>Entrada Inteligente (XML)</h3>
-                        <p>Conferência Cega obrigatória. Bipar Produto + Prateleira (Endereçamento).</p>
-                        <button class="btn-ghost" onclick="document.getElementById('proc-xml').style.display='block'"><i
-                                data-lucide="info"></i> Ver Protocolo Sistêmico</button>
-                        <div id="proc-xml" class="procedure-box">1. Importar XML (Compras) -> 2. Receber Volumes -> 3.
-                            Conferir Itens (Bipagem) -> 4. Lançar Estoque.</div>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="time-block">
-                        <div class="time">13:00 - 15:30</div>
-                        <div class="phase">Manutenção</div>
-                    </div>
-                    <div class="content">
-                        <h3>Reposição & Ciclo 5S</h3>
-                        <p>Repor Frente de Loja e executar o Kit de Batalha (Limpeza + Organização do setor do dia).</p>
-                    </div>
-                </div>
-            </section>
-            <section class="glass-card">
-                <h2><i data-lucide="calendar"></i> Foco Semanal (Rodízio)</h2>
-                <div class="weekly-grid">
-                    <div class="day-card">
-                        <div class="day-header">SEG <i data-lucide="check-circle"></i></div>
-                        <p><strong>Auditoria:</strong> Pendências de FDS e Itens de Alto Giro.</p>
-                    </div>
-                    <div class="day-card">
-                        <div class="day-header">TER <i data-lucide="package"></i></div>
-                        <p><strong>Pesados:</strong> Zona Baixa e Eletros. Alinhamento de Pallets.</p>
-                    </div>
-                    <div class="day-card">
-                        <div class="day-header">QUA <i data-lucide="utensils"></i></div>
-                        <p><strong>Miudezas:</strong> Talheres e Utensílios. Organização de caixas.</p>
-                    </div>
-                    <div class="day-card">
-                        <div class="day-header">QUI <i data-lucide="glass-water"></i></div>
-                        <p><strong>Vidros:</strong> Cristais e Taças. Inspeção visual contra trincas.</p>
-                    </div>
-                    <div class="day-card">
-                        <div class="day-header">SEX <i data-lucide="tag"></i></div>
-                        <p><strong>Outlet:</strong> Curva A e precificação de itens sem caixa.</p>
-                    </div>
-                    <div class="day-card">
-                        <div class="day-header">SÁB <i data-lucide="shopping-cart"></i></div>
-                        <p><strong>Suporte:</strong> Foco total em agilidade de entrega no balcão.</p>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- ================= ABA 3: 5S ELITE ================= -->
-        <div id="tab-estoque5s" class="tab-content">
-            <header>
-                <h1>Gestão de Estoque 5S</h1>
-                <p class="subtitle">Casa Goianita • Manual de Operações & Rotinas 2026</p>
-                <div style="margin-top: 1.5rem;">
-                    <a href="https://drive.google.com/file/d/1LezPS56TU-UYPzIyGKTDiz_PAZUsuuh2/view?usp=sharing"
-                        target="_blank" class="btn-action">
-                        <i data-lucide="book-open"></i> Acessar Manual 5S Completo
-                    </a>
-                </div>
-            </header>
-            <section class="team-grid">
-                <div class="glass-card">
-                    <div class="team-badge"><i data-lucide="map-pin"></i> Unidade T4</div>
-                    <div class="team-names">Lucas</div>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Responsável Geral T4
-                    </p>
-                </div>
-                <div class="glass-card">
-                    <div class="team-badge"><i data-lucide="map-pin"></i> Unidade 85</div>
-                    <div class="team-names">Márcio & Jayme</div>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Responsáveis Gerais
-                        85</p>
-                </div>
-            </section>
-
-            <section>
-                <div class="glass-card">
-                    <h2><i data-lucide="truck" color="#00e800"></i> Protocolo de Logística e Motorista</h2>
-                    <div class="logistics-box">
-                        <div class="logistics-title"><i data-lucide="alert-circle"></i> Regra de Ouro: Preparação
-                            Antecipada</div>
-                        <p style="font-size: 0.95rem; color: var(--text-secondary);">A coleta do motorista é
-                            <strong>flexível</strong>, mas a preparação do estoque é <strong>fixa (manhã)</strong>.
-                        </p>
-                    </div>
-                    <ul style="color: var(--text-secondary); padding-left: 1.5rem; margin-top: 1rem;">
-                        <li style="margin-bottom: 0.5rem;"><strong>08:00 - 09:30:</strong> Horário obrigatório para
-                            separar transferências e entradas no sistema.</li>
-                        <li style="margin-bottom: 0.5rem;"><strong>Modus Operandi:</strong> Quando o motorista chegar, a
-                            carga já deve estar separada, conferida e na zona de expedição.</li>
-                        <li><strong>Coletas de Clientes:</strong> Itens vendidos para retirada em outra loja têm
-                            prioridade absoluta.</li>
+        <!-- Main Content -->
+        <main class="grid-dashboard">
+            
+            <!-- Card 1 -->
+            <article class="halo-card">
+                <header class="card-header">
+                    <div class="card-icon"><i data-lucide="map-pin-house"></i></div>
+                    <h2 class="card-title">1. Transição de Endereço e Marca</h2>
+                </header>
+                <div class="card-content">
+                    <ul>
+                        <li><strong>Contrato e Endereço:</strong> Matheus deve conduzir as alterações de contrato social para o endereço da loja 135 até o dia 12.</li>
+                        <li><strong>Integração Digital:</strong> Eduardo iniciou o cadastro da linha "Castor" no Mercado Livre. A operação "Virtual" continua paralela.</li>
+                        <li><strong>Fachada e Comunicação:</strong> Fachada da "Casa dos Enxovais" será removida. Nova comunicação inicia dia 16 com o mote "mudamos de endereço / excelente notícia".</li>
+                        <li><strong>Promoções:</strong> Curuca e Elber têm uma semana para listar mercadorias em promoção para a criação de artes (responsabilidade de Débora).</li>
+                        <li><strong>Visual Merchandising:</strong> Levantamento de taças e porcelanas para expositores frontais. Débora e Fábio criarão as assinaturas visuais.</li>
+                        <li><strong>Infraestrutura:</strong> Reformas pontuais (pintura de balcões) sob organização do Elber. Iluminação original não pode ser removida pelo locatário anterior.</li>
+                        <li><strong>Terminais:</strong> Inventário e realocação de maquininhas de cartão da Castor e Virtual para a loja 135.</li>
                     </ul>
                 </div>
-            </section>
+            </article>
 
-            <section>
-                <div class="glass-card">
-                    <h2><i data-lucide="clock" color="#00e800"></i> Rotina Diária Padrão (Seg-Sex)</h2>
-                    <div class="timeline-item">
-                        <div class="time-block">
-                            <div class="time">08:00 - 09:30</div>
-                            <div class="phase">Bloco Crítico</div>
-                        </div>
-                        <div class="content">
-                            <h3>Transferências & Expedição</h3>
-                            <ul style="color:var(--text-secondary);">
-                                <li>Verificar Dashboard de Transferências (Pedidos da 85/T4).</li>
-                                <li>Separar itens físicos e dar baixa imediata via Coletor.</li>
-                                <li>Organizar zona de expedição para chegada do motorista.</li>
-                            </ul>
-                            <div class="efficiency-alert"><i data-lucide="zap"></i><span><strong>Nota de
-                                        Eficiência:</strong> Esta atividade pode ser concluída em menos tempo se
-                                    organizada antecipadamente.</span></div>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="time-block">
-                            <div class="time">09:00 - 11:00</div>
-                            <div class="phase">Recebimento</div>
-                        </div>
-                        <div class="content">
-                            <h3>Entrada Inteligente (XML)</h3>
-                            <ul style="color:var(--text-secondary);">
-                                <li>Conferência Cega obrigatória.</li>
-                                <li>Bipar Produto + Prateleira (Endereçamento de Qualidade).</li>
-                                <li><strong>Prevenção:</strong> Recusar mercadoria sem NFe.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="timeline-item">
-                        <div class="time-block">
-                            <div class="time">13:00 - 15:30</div>
-                            <div class="phase">Manutenção</div>
-                        </div>
-                        <div class="content">
-                            <h3>Reposição & Ciclo 5S</h3>
-                            <ul style="color:var(--text-secondary);">
-                                <li>Recolhimento de papelões e materiais de embalagem.</li>
-                                <li>Varrer e organizar todo o estoque da área focada no ciclo semanal.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <div class="glass-card">
-                    <h2><i data-lucide="calendar" color="#00e800"></i> Foco Semanal (Rodízio 5S)</h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Além da rotina diária, dedicar 1
-                        hora do período da tarde para o foco específico do dia.</p>
-                    <div class="weekly-grid">
-                        <div class="day-card">
-                            <div class="day-header">Segunda <i data-lucide="clipboard-list"></i></div>
-                            <div class="day-focus">Auditoria de Transferências</div>
-                            <div class="day-action">Revisar pendências de Sábado/Domingo.</div>
-                        </div>
-                        <div class="day-card">
-                            <div class="day-header">Terça <i data-lucide="package"></i></div>
-                            <div class="day-focus">Zona Baixa e Eletros</div>
-                            <div class="day-action">Garantir que pesados estejam alinhados e sem caixas rasgadas.</div>
-                        </div>
-                        <div class="day-card">
-                            <div class="day-header">Quarta <i data-lucide="utensils"></i></div>
-                            <div class="day-focus">Miudezas e Utensílios</div>
-                            <div class="day-action">Etiquetagem e reposição de gavetas.</div>
-                        </div>
-                        <div class="day-card">
-                            <div class="day-header">Quinta <i data-lucide="glass-water"></i></div>
-                            <div class="day-focus">Vidros e Cristais</div>
-                            <div class="day-action">Remoção do pó, inspeção contra avarias (se achou quebrado, dá
-                                baixa!).</div>
-                        </div>
-                        <div class="day-card">
-                            <div class="day-header">Sexta <i data-lucide="tag"></i></div>
-                            <div class="day-focus">Curva A</div>
-                            <div class="day-action">Precificação de todos os itens desembalados ou em mostruário.</div>
-                        </div>
-                        <div class="day-card">
-                            <div class="day-header">Sábado <i data-lucide="shopping-cart"></i></div>
-                            <div class="day-focus">Caça Cega</div>
-                            <div class="day-action">Suporte tático: Foco estrito em entregar mercadorias ao cliente
-                                frontal.</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- ================= ABA 4: ATAS & RELATÓRIOS ================= -->
-        <div id="tab-atas" class="tab-content">
-            <header>
-                <span class="badge">Decisões de Diretoria</span>
-                <h1>Atas & Relatórios Estratégicos</h1>
-                <p class="subtitle" style="text-align:center;">Histórico de alinhamentos e decisões táticas para a Casa Goianita.</p>
-            </header>
-
-            <section class="glass-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h2><i class="fa-solid fa-calendar-day" color="#00e800"></i> Ata de Reunião: 24/04/2026</h2>
-                    <a href="https://ecossistemalive.github.io/vidi-relatorio-estrategico/" target="_blank" class="btn-action">
-                        <i class="fa-solid fa-chart-line"></i> Abrir Dashboard Interativo
-                    </a>
-                </div>
-
-                <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-                    <div class="tech-card">
-                        <div class="why-tag">LOGÍSTICA & IMÓVEIS</div>
-                        <ul class="check-list">
-                            <li><strong>Desocupação T4:</strong> Prazo final 12/05.</li>
-                            <li><strong>Contrato Social:</strong> Mudança de endereço para nº 135 em andamento.</li>
-                        </ul>
-                    </div>
-                    <div class="tech-card">
-                        <div class="why-tag">MARKETING & BRANDING</div>
-                        <ul class="check-list">
-                            <li><strong>Go-Live Nova Marca:</strong> Confirmado para 16/05.</li>
-                            <li><strong>Reforma Visual:</strong> Pintura de balcões e nova fachada.</li>
-                        </ul>
-                    </div>
-                    <div class="tech-card">
-                        <div class="why-tag">NOVOS NEGÓCIOS</div>
-                        <ul class="check-list">
-                            <li><strong>MVP Usados:</strong> Karine responsável pela triagem.</li>
-                            <li><strong>Distribuição Lumen:</strong> E-commerce sem estoque em configuração.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="instruction-block" style="margin-top: 1.5rem;">
-                    <h3 style="color: var(--live-accent); margin-bottom: 0.5rem;"><i class="fa-solid fa-list-check"></i> Próximos Passos (Crítico)</h3>
-                    <ul class="check-list">
-                        <li>Registrar funcionário Pedro imediatamente.</li>
-                        <li>Treinamento LIST: Hoje às 15h.</li>
-                        <li>Cessação total de compras via CNPJ Virtual.</li>
+            <!-- Card 2 -->
+            <article class="halo-card">
+                <header class="card-header">
+                    <div class="card-icon"><i data-lucide="refresh-cw"></i></div>
+                    <h2 class="card-title">2. Novo Modelo: Consignação e Usados</h2>
+                </header>
+                <div class="card-content">
+                    <ul>
+                        <li><strong>Conceito (MVP):</strong> Venda de itens usados em consignação, inicialmente 100% vinculado à Goianita.</li>
+                        <li><strong>Sistemas e Contratos:</strong> Luiz Portal (Consultoria) mapeará software de gestão enxuto e redigirá contratos de consignação.</li>
+                        <li><strong>Operação:</strong> Karine receberá os produtos usados nos primeiros 15 dias de projeto.</li>
+                        <li><strong>Naming e Marketing:</strong> Débora centralizará sugestões de nomes, checará INPI/domínios e criará materiais de divulgação.</li>
+                        <li><strong>Ação Interna:</strong> Sócios e gestores devem listar itens pessoais para dar início ao estoque e testar o formato.</li>
                     </ul>
                 </div>
-            </section>
+            </article>
 
-            <section class="glass-card">
-                <h2><i class="fa-solid fa-history"></i> Arquivo de Apresentações</h2>
-                <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    <a href="apresentacao-estrategia-15-04/index.html" target="_blank" class="day-card" style="text-decoration:none; display:block;">
-                        <div class="day-header" style="color:#fff;">15/04/2026</div>
-                        <p style="font-size:0.8rem;">Reestruturação Societária & Olist</p>
-                    </a>
-                    <a href="analise-estrategica-goianita-15-04/index.html" target="_blank" class="day-card" style="text-decoration:none; display:block;">
-                        <div class="day-header" style="color:#fff;">Diagnóstico</div>
-                        <p style="font-size:0.8rem;">Análise Profunda de Passivos</p>
-                    </a>
+            <!-- Card 3 -->
+            <article class="halo-card">
+                <header class="card-header">
+                    <div class="card-icon"><i data-lucide="megaphone"></i></div>
+                    <h2 class="card-title">3. Programa de Embaixadoras</h2>
+                </header>
+                <div class="card-content">
+                    <ul>
+                        <li><strong>Lançamento:</strong> Reunião presencial em ~20 dias com 5 a 6 influenciadoras e personal organizers.</li>
+                        <li><strong>Objetivo:</strong> Apresentar a nova marca, regras, benefícios do programa e elaborar o cronograma de conteúdo.</li>
+                    </ul>
                 </div>
-            </section>
-        </div>
+            </article>
 
-        <!-- ================= ABA 5: COMUNICADO MUDANÇA ================= -->
-        <div id="tab-comunicado" class="tab-content">
-            <header>
-                <span class="badge">Atenção Equipe T4 e 85</span>
-                <h1>A Casa Goianita de casa (e de cara) nova! 🎉</h1>
-                <p class="subtitle"
-                    style="text-align:center; max-width:800px; margin: 0 auto; margin-top:15px; font-size:1.1rem; color:var(--text-secondary);">
-                    Estamos iniciando o planejamento estratégico para a transferência da nossa loja da T4 para a 85.
-                    Será um espaço moderno, reformado e com nova identidade!
-                </p>
-            </header>
-
-            <section class="glass-card" style="border-color: var(--live-accent); margin-top:2rem;">
-                <h2><i data-lucide="info" color="#00e800"></i> Como vai funcionar essa mudança na prática?</h2>
-                <div class="logistics-box" style="margin-bottom: 2rem;">
-                    <div class="logistics-title"><i data-lucide="alert-circle"></i> Regra de Ouro: Planejamento
-                        Estruturado</div>
-                    <p style="font-size: 0.95rem; color: var(--text-secondary);">Sabemos que mudanças podem gerar
-                        ansiedade, mas tudo será feito de forma <strong>gradual e organizada</strong>.</p>
+            <!-- Card 4 -->
+            <article class="halo-card">
+                <header class="card-header">
+                    <div class="card-icon"><i data-lucide="shopping-cart"></i></div>
+                    <h2 class="card-title">4. Expansão Omnichannel</h2>
+                </header>
+                <div class="card-content">
+                    <ul>
+                        <li><strong>Acordo Comercial:</strong> O e-commerce venderá produtos diretamente do estoque da parceira Lumen.</li>
+                        <li><strong>Fluxo Dropshipping:</strong> A loja física emite a nota, mas o despacho é feito diretamente pela distribuidora.</li>
+                        <li><strong>Integração Vendas:</strong> Vendedores de salão poderão vender itens do e-commerce (sem estoque local) para retirada na loja física.</li>
+                    </ul>
                 </div>
+            </article>
 
-                <div class="tech-card">
-                    <div class="step-title"><span>1. Continuidade das Operações</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li>A loja da <strong>T4 continuará operando normalmente</strong>.</li>
-                            <li>Não há data de fechamento apressada; a T4 só encerra as atividades quando a loja da 85
-                                estiver 100% pronta.</li>
-                        </ul>
-                    </div>
+            <!-- Card 5 -->
+            <article class="halo-card">
+                <header class="card-header">
+                    <div class="card-icon"><i data-lucide="users"></i></div>
+                    <h2 class="card-title">5. Recursos Humanos e Treinamentos</h2>
+                </header>
+                <div class="card-content">
+                    <ul>
+                        <li><strong>Risco Trabalhista Urgente:</strong> Funcionário Pedro está sem registro. Silvana deve contatar Leila para regularização imediata.</li>
+                        <li><strong>Equipe Loja 135:</strong> Fabrício permanece provisoriamente. Futuramente, contratação de estoquista e promoção de Ana Paula à gerência.</li>
+                        <li><strong>Equipe Loja 85:</strong> Abertura de vaga para novo vendedor (salário base + bonificações > R$ 4.000,00).</li>
+                        <li><strong>Treinamentos:</strong> Financeiro (Liste) sexta-feira 15h. Vendas/Processos na segunda ou terça-feira, liderado por Adriano.</li>
+                    </ul>
                 </div>
+            </article>
 
-                <div class="tech-card">
-                    <div class="step-title"><span>2. Trânsferência Inteligente (Atenção Estoque)</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li>A mudança do acervo será feita aos poucos, utilizando nossa van.</li>
-                            <li>Haverá intensa triagem: apenas mercadorias de linha e de Curva A irão para as
-                                prateleiras da 85.</li>
-                        </ul>
-                    </div>
+            <!-- Card 6 -->
+            <article class="halo-card">
+                <header class="card-header">
+                    <div class="card-icon"><i data-lucide="building-2"></i></div>
+                    <h2 class="card-title">6. Questões Administrativas</h2>
+                </header>
+                <div class="card-content">
+                    <ul>
+                        <li><strong>Rescisão Loja T4:</strong> Envio formal de aviso de desocupação (30 dias).</li>
+                        <li><strong>Passivo e Obras:</strong> Dívida de aluguel/IPTU a renegociar. Benfeitorias (cobertura de 40 mil) não abatem aluguel por lei sem acordo comercial prévio.</li>
+                        <li><strong>Fornecedores:</strong> Cotações da Supercron apresentaram forte alta; retorno da Tramontina segue pendente.</li>
+                    </ul>
                 </div>
+            </article>
 
-                <div class="tech-card">
-                    <div class="step-title"><span>3. Mega Liquidação na T4 (Alô, Vendas)</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li>Produtos oportunidade (que não vão para a 85) entrarão numa super liquidação com até
-                                <strong>25% de desconto</strong> na T4!
-                            </li>
-                            <li><em>Atenção Regra:</em> Durante este período de liquidação, as <strong>trocas estarão
-                                    temporariamente suspensas</strong> na T4.</li>
-                        </ul>
-                    </div>
-                </div>
+        </main>
 
-                <div class="tech-card">
-                    <div class="step-title"><span>4. Encantando Clientes</span></div>
-                    <div class="instruction-block">
-                        <ul class="check-list">
-                            <li>Instalaremos em breve avisos oficiais de "Estamos mudando de endereço".</li>
-                            <li>Aproveitem para convidar os clientes fidelizados a conhecer o novo formato!</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section class="glass-card">
-                <div class="instruction-block"
-                    style="font-size:1.1rem; font-style:italic; text-align:center; color:#a2ffae;">
-                    Esta mudança (junto com a liberação das nossas vendas online via Olist e o nosso novo vídeo-teaser
-                    que em breve rodará as redes) marca o início de um novo e próspero capítulo para a família Casa
-                    Goianita. Contamos com o brilho no olho e o engajamento de cada um de vocês!
-                    <br /><br />
-                    <strong>A Direção / Conselho Estratégico</strong><br />
-                    Casa Goianita
-                </div>
-            </section>
-        </div>
+        <!-- Footer -->
+        <footer class="site-footer">
+            <p>&copy; 2026 Powered by <a href="mailto:cleberdonato@ecossistemalive.com.br">Cléber Donato</a>.</p>
+            <p style="font-size: 0.75rem; opacity: 0.5;">V6.0 Elite & AI-Driven UI</p>
+        </footer>
 
     </div>
 
-    <footer>
-        <div class="container">
-            <img src="assets/logo-live.png" alt="Live Consultoria" class="footer-logo">
-            <p style="color: #64748b; font-size: 14px; margin-top: 15px;">
-                &copy; 2026 Manual de Operações | Casa Goianita<br>
-                Desenvolvido por <strong>Cléber Donato</strong> - Estrategista Live Consultoria V6.0
-            </p>
-        </div>
-    </footer>
+    <!-- Indicador de IA -->
+    <div class="ai-indicator" id="ai-toast">
+        <div class="ai-pulse"></div>
+        <span>Modo Analítico Ativado (Leitura Otimizada)</span>
+    </div>
 
+    <!-- Scripts do Sistema -->
     <script>
+        // 1. Inicializar Ícones (Lucide)
         lucide.createIcons();
-        mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { primaryColor: '#00e800', primaryBorderColor: '#00e800', primaryTextColor: '#fff', lineColor: '#00e800' } });
 
-        function switchTab(event, tabId) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-            lucide.createIcons();
-            // Evitar problemas de renderização de abas ocultas se houver outros SVGs gerados depois
-            const m = document.querySelector('#' + tabId + ' .mermaid');
-            if (tabId === 'tab-organograma' && m && !m.getAttribute('data-processed')) {
-                mermaid.init(undefined, m);
+        // 2. Física de Refração e Cursor (Cards Hover & Desktop Flashlight)
+        const cards = document.querySelectorAll('.halo-card');
+        const globalFlashlight = document.getElementById('global-flashlight');
+
+        document.addEventListener('mousemove', (e) => {
+            // Flashlight Global
+            globalFlashlight.style.setProperty('--mouse-x', `${e.clientX}px`);
+            globalFlashlight.style.setProperty('--mouse-y', `${e.clientY}px`);
+            
+            // Matrix Effect Interno dos Cards
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // 3. Tipografia Cinética (Tracking shifting on scroll)
+        const kineticTitle = document.getElementById('main-title');
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY;
+            // Movimento do fundo (gradient) e expansão sutil do tracking
+            kineticTitle.style.backgroundPosition = `${scrollPos * 0.5}px center`;
+            
+            // Limitar a expansão para não quebrar o layout
+            let tracking = -0.5 + (scrollPos * 0.005);
+            if (tracking > 2) tracking = 2;
+            kineticTitle.style.letterSpacing = `${tracking}px`;
+        });
+
+        // 4. Inteligência Comportamental (AI-Driven UI)
+        let aiModeActive = false;
+        const btnToggleAI = document.getElementById('btn-toggle-ai');
+        const aiToast = document.getElementById('ai-toast');
+
+        function toggleAIMode() {
+            aiModeActive = !aiModeActive;
+            document.body.classList.toggle('analytical-mode', aiModeActive);
+            
+            if (aiModeActive) {
+                aiToast.classList.add('active');
+                setTimeout(() => { aiToast.classList.remove('active'); }, 4000);
             }
         }
+
+        // Ativação manual via botão
+        btnToggleAI.addEventListener('click', toggleAIMode);
+
+        // Ativação por comportamento (após 30 segundos de permanência)
+        let readingTimer = setTimeout(() => {
+            if (!aiModeActive) {
+                toggleAIMode();
+            }
+        }, 30000); // 30s
+
+        // Resetar timer se houver interação drástica (opcional)
+        // Como o padrão pede ativação ao detectar leitura profunda, o timer estático serve perfeitamente ao MVP do Guia.
+
     </script>
 </body>
-
 </html>
